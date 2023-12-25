@@ -39,6 +39,7 @@ dependencies:
   avatar_brick:   
     git:
       url: https://github.com/congson99/avatar_brick.git
+  http: ^1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
