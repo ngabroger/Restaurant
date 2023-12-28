@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_app/blueprint/data_restaurant.dart';
+import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
 import 'package:restaurant_app/pages/detail_page.dart';
 import 'package:restaurant_app/pages/home_page.dart';
 import 'package:restaurant_app/pages/splash_screen.dart';
 
+import 'data/api/api_service.dart';
+
 void main() {
   runApp(const MyApp());
+  Get.put(RestaurantController(apiService: ApiService()));
 }
 
 class MyApp extends StatelessWidget {

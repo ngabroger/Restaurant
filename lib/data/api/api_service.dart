@@ -13,7 +13,7 @@ class ApiService {
   static const String _postReview = 'review';
   static const String imgUrl = '${_baseUrl}images/medium/';
 
-  Future<dynamic> listRestaurants() async {
+  Future<ArticleResult> listRestaurants() async {
     final response = await http.get(Uri.parse(_baseUrl + _list));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

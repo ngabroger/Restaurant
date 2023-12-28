@@ -6,18 +6,16 @@ ArticleResult articleResultFromJson(String str) =>
 String articleResultToJson(ArticleResult data) => json.encode(data.toJson());
 
 class ArticleResult {
-  bool error;
-  String message;
-  int count;
-  List<Restaurant> restaurants;
-
   ArticleResult({
     required this.error,
     required this.message,
     required this.count,
     required this.restaurants,
   });
-
+  bool error;
+  String message;
+  int count;
+  List<Restaurant> restaurants;
   factory ArticleResult.fromJson(Map<String, dynamic> json) => ArticleResult(
         error: json["error"],
         message: json["message"],
