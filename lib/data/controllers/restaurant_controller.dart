@@ -7,8 +7,8 @@ enum ResultState { loading, noData, hasData, error }
 
 class RestaurantController extends GetxController {
   final ApiService apiService;
-
-  RestaurantController({required this.apiService}) {
+  final String id;
+  RestaurantController({required this.apiService, required this.id}) {
     fetchRestaurants();
   }
   late dynamic _restaurantResult;

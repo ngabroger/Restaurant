@@ -11,7 +11,6 @@ import 'data/api/api_service.dart';
 
 void main() {
   runApp(const MyApp());
-  Get.put(RestaurantController(apiService: ApiService()));
 }
 
 class MyApp extends StatelessWidget {

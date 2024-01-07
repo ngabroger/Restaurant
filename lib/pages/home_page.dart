@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/retry.dart';
-import 'package:restaurant_app/blueprint/data_restaurant.dart';
+
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
-// import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
-// import 'package:restaurant_app/data/model/restaurant.dart';
 import 'package:restaurant_app/pages/detail_page.dart';
 import 'package:restaurant_app/widget/bookmark.dart';
+
+import '../data/model/restaurant.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(RestaurantController(apiService: ApiService()));
+    Get.put(RestaurantController(apiService: ApiService(), id: ''));
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red,
@@ -139,9 +139,13 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _listRestaurant extends StatelessWidget {
-  final RestaurantController restaurantController =
-      Get.put(RestaurantController(apiService: ApiService()));
+class _listRestaurant extends StatefulWidget {
+  @override
+  State<_listRestaurant> createState() => _listRestaurantState();
+}
+
+class _listRestaurantState extends State<_listRestaurant> {
+  final RestaurantController restaurantController = Get.find();
   @override
   Widget build(BuildContext context) {
     restaurantController.fetchRestaurants();
