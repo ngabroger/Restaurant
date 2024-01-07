@@ -2,14 +2,12 @@ import 'package:avatar_brick/avatar_brick.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/retry.dart';
-import 'package:restaurant_app/blueprint/data_restaurant.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
-// import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
-// import 'package:restaurant_app/data/model/restaurant.dart';
 import 'package:restaurant_app/pages/detail_page.dart';
 import 'package:restaurant_app/widget/bookmark.dart';
+
+import '../data/model/restaurant.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -21,13 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Get.put(RestaurantController(apiService: ApiService()));
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red,
@@ -69,11 +61,7 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.poppins(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 5000,
-                    child: _listRestaurant(),
-                  ),
+                  _listRestaurant(),
                 ],
               ),
             )
@@ -140,34 +128,157 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _listRestaurant extends StatelessWidget {
-  final RestaurantController restaurantController =
-      Get.put(RestaurantController(apiService: ApiService()));
   @override
   Widget build(BuildContext context) {
-    restaurantController.fetchRestaurants();
-    // TODO: implement build
-    return Obx(() {
-      if (restaurantController.state == ResultState.loading) {
-        return CircularProgressIndicator();
-      } else if (restaurantController.state == ResultState.hasData) {
-        return ListView.builder(
-          itemCount: restaurantController.result.length,
-          itemBuilder: (context, index) {
-            Restaurant restaurant = restaurantController.result[index];
-            return Card(
-              elevation: 5,
-              child: ListTile(
-                title: Text(restaurant.name),
-                subtitle: Text(restaurant.description),
-              ),
-            );
-          },
-        );
-      } else if (restaurantController.state == ResultState.error) {
-        return Text('error ${restaurantController.message}');
-      } else {
-        return Text('Error');
-      }
-    });
+    return GetBuilder<RestaurantController>(
+      init: RestaurantController(apiService: ApiService(), id: ''),
+      builder: (controller) {
+        if (controller.state == ResultState.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (controller.state == ResultState.hasData) {
+          final List<Restaurant> restaurants = controller.result;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: restaurants.length,
+                  itemBuilder: (context, index) {
+                    final individualRestaurant = restaurants[index];
+                    return ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      child: Card(
+                        child: Column(
+                          children: [
+                            Column(
+                              children: [
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 150,
+                                      child: Hero(
+                                        tag:
+                                            'restaurant_picture_${individualRestaurant.pictureId}',
+                                        child: Image(
+                                          image: NetworkImage(
+                                            ApiService.imgUrl +
+                                                individualRestaurant.pictureId,
+                                          ),
+                                          width: 250,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 10,
+                                      right: 10,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                        child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          color: Colors.white,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star,
+                                                color: Colors.yellow[600],
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                individualRestaurant.rating
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(15),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            individualRestaurant.name,
+                                            style: GoogleFonts.sourceSerif4(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.restaurant,
+                                                size: 25,
+                                              ),
+                                              SizedBox(width: 7),
+                                              Text(individualRestaurant.city),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(15),
+                                      child: Bookmark(),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        } else if (controller.state == ResultState.noData) {
+          return Center(child: Text(controller.message));
+        } else if (controller.state == ResultState.error) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/lost-connection.png", width: 100),
+                const SizedBox(height: 10),
+                const Center(
+                  child: Text(
+                    "Lost Connection!",
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  child: const Text("Refresh"),
+                  onPressed: () {
+                    controller.listRestaurant();
+                  },
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Center(
+            child: Text("Error"),
+          );
+        }
+      },
+    );
   }
 }
