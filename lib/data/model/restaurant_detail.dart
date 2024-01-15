@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final restaurantDetails = restaurantDetailsFromJson(jsonString);
+
 
 import 'dart:convert';
 
@@ -14,29 +12,29 @@ class RestaurantDetails {
   RestaurantDetails({
     required this.error,
     required this.message,
-    required this.restaurant,
+    required this.detailsRestaurant,
   });
 
   bool error;
   String message;
-  Restaurant restaurant;
+  DetailsRestaurant detailsRestaurant;
 
   factory RestaurantDetails.fromJson(Map<String, dynamic> json) =>
       RestaurantDetails(
         error: json["error"],
         message: json["message"],
-        restaurant: Restaurant.fromJson(json["restaurant"]),
+        detailsRestaurant: DetailsRestaurant.fromJson(json["restaurant"]),
       );
 
   Map<String, dynamic> toJson() => {
         "error": error,
         "message": message,
-        "restaurant": restaurant.toJson(),
+        "restaurant": detailsRestaurant.toJson(),
       };
 }
 
-class Restaurant {
-  Restaurant({
+class DetailsRestaurant {
+  DetailsRestaurant({
     required this.id,
     required this.name,
     required this.description,
@@ -60,7 +58,8 @@ class Restaurant {
   double rating;
   List<CustomerReview> customerReviews;
 
-  factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
+  factory DetailsRestaurant.fromJson(Map<String, dynamic> json) =>
+      DetailsRestaurant(
         id: json["id"],
         name: json["name"],
         description: json["description"],

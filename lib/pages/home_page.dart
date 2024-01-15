@@ -1,15 +1,8 @@
 import 'package:avatar_brick/avatar_brick.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/retry.dart';
 
-import 'package:restaurant_app/data/api/api_service.dart';
-import 'package:restaurant_app/data/controllers/restaurant_controller.dart';
-import 'package:restaurant_app/pages/detail_page.dart';
-import 'package:restaurant_app/widget/bookmark.dart';
-
-import '../data/model/restaurant.dart';
+import 'package:restaurant_app/widget/restaurant_list.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -21,13 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Get.put(RestaurantController(apiService: ApiService(), id: ''));
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red,
@@ -36,11 +23,14 @@ class _HomePageState extends State<HomePage> {
             'Home Page',
             style: GoogleFonts.poppins(fontSize: 20),
           )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/search');
+                },
+                icon: Icon(Icons.search))
+          ],
         ),
-
-        // body: Container(
-        //   child: _buildList(context),
-        // ));
         body: ListView(
           scrollDirection: Axis.vertical,
           children: [
@@ -69,11 +59,7 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.poppins(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 5000,
-                    child: _listRestaurant(),
-                  ),
+                  RestaurantList(),
                 ],
               ),
             )
@@ -136,42 +122,5 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-  }
-}
-
-class _listRestaurant extends StatefulWidget {
-  @override
-  State<_listRestaurant> createState() => _listRestaurantState();
-}
-
-class _listRestaurantState extends State<_listRestaurant> {
-  final RestaurantController restaurantController = Get.find();
-  @override
-  Widget build(BuildContext context) {
-    restaurantController.fetchRestaurants();
-    // TODO: implement build
-    return Obx(() {
-      if (restaurantController.state == ResultState.loading) {
-        return CircularProgressIndicator();
-      } else if (restaurantController.state == ResultState.hasData) {
-        return ListView.builder(
-          itemCount: restaurantController.result.length,
-          itemBuilder: (context, index) {
-            Restaurant restaurant = restaurantController.result[index];
-            return Card(
-              elevation: 5,
-              child: ListTile(
-                title: Text(restaurant.name),
-                subtitle: Text(restaurant.description),
-              ),
-            );
-          },
-        );
-      } else if (restaurantController.state == ResultState.error) {
-        return Text('error ${restaurantController.message}');
-      } else {
-        return Text('Error');
-      }
-    });
   }
 }
