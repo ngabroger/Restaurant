@@ -10,7 +10,8 @@ class RestaurantController extends ChangeNotifier {
   final String id;
 
   RestaurantController({required this.apiService, required this.id}) {
-    listRestaurant();
+    fetchRestaurants();
+
   }
 
   late dynamic _restaurantResult;
