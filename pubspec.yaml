@@ -40,8 +40,8 @@ dependencies:
     git:
       url: https://github.com/congson99/avatar_brick.git
   http: ^1.1.2
-  get: ^4.6.6
   provider: ^6.1.1
+  animation_search_bar: ^0.0.10
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,35 +1,62 @@
-import 'package:get/get.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
 import '../api/api_service.dart';
-import '../model/restaurant.dart';
 
-enum ResultState { loading, hasData, noData, error }
+enum ResultState { loading, noData, hasData, error }
 
-class RestaurantController extends GetxController {
+class RestaurantController extends ChangeNotifier {
   final ApiService apiService;
   final String id;
 
-  RestaurantController({required this.apiService, required this.id});
+  RestaurantController({required this.apiService, required this.id}) {
+    listRestaurant();
+  }
 
-  final Rx<ResultState> _state = ResultState.loading.obs;
-  final RxList<Restaurant> _result = <Restaurant>[].obs;
-  final Rx<String> _message = ''.obs;
+  late dynamic _restaurantResult;
+  late ResultState _state;
+  String _message = '';
 
-  ResultState get state => _state.value;
-  RxList<Restaurant> get result => _result;
-  String get message => _message.value;
+  String get message => _message;
+
+  dynamic get result => _restaurantResult;
+
+  ResultState get state => _state;
 
   Future<dynamic> listRestaurant() async {
     try {
-      print("Loading...");
-      _state.value = ResultState.loading;
-      final articleResult = await apiService.listRestaurants();
-      final List<Restaurant> data = articleResult.restaurants;
-      _state.value = ResultState.hasData;
-      _result.addAll(data);
+      _state = ResultState.loading;
+      notifyListeners();
+      final listRestaurants = await apiService.listRestaurants();
+      notifyListeners();
+      _state = ResultState.hasData;
+      notifyListeners();
+      return _restaurantResult = listRestaurants.restaurants;
     } catch (e) {
-      _state.value = ResultState.error;
-      _message.value = 'Error: $e';
+      _state = ResultState.error;
+      notifyListeners();
+      return _message = 'Error: $e';
+    }
+  }
+
+  Future<dynamic> restaurantSearch(String query) async {
+    try {
+      _state = ResultState.loading;
+      notifyListeners();
+      final restaurantSearch = await apiService.restaurantSearch(query);
+      if (restaurantSearch.restaurants.isEmpty) {
+        _state = ResultState.noData;
+        notifyListeners();
+        return _message = 'Not Found';
+      } else {
+        _state = ResultState.hasData;
+        notifyListeners();
+        return _restaurantResult = restaurantSearch.restaurants;
+      }
+    } catch (e) {
+      _state = ResultState.error;
+      notifyListeners();
+      return _message = 'Error: $e';
     }
   }
 }

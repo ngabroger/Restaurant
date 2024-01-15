@@ -13,10 +13,11 @@ class ApiService {
   static const String _postReview = 'review';
   static const String imgUrl = '${_baseUrl}images/medium/';
 
-  Future<ArticleResult> listRestaurants() async {
+  Future<Restaurants> listRestaurants() async {
     final response = await http.get(Uri.parse(_baseUrl + _list));
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      return Restaurants.fromJson(jsonResponse);
     } else {
       throw Exception('Failed to load list');
     }
