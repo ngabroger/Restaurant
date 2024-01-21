@@ -1,129 +1,169 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant_app/data/controllers/database_controller.dart';
 import '../data/model/restaurant_detail.dart';
+import '../data/model/restaurant.dart' as resto;
 import 'package:restaurant_app/data/controllers/detail_restaurant_controller.dart';
 
 class RestaurantDetail extends StatelessWidget {
   final DetailsRestaurant restaurant;
   final DetailController provider;
+  final resto.Restaurant restaurants;
   const RestaurantDetail(
-      {Key? key, required this.restaurant, required this.provider})
+      {Key? key,
+      required this.restaurant,
+      required this.provider,
+      required this.restaurants})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
+    return Consumer<DatabaseProvider>(
+      builder: (context, provider, child) {
+        return FutureBuilder(
+          future: provider.isFavorited(restaurant.id),
+          builder: (context, snapshot) {
+            var isFavorited = snapshot.data ?? false;
+            return ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              restaurant.name,
-                              style: GoogleFonts.sourceSerif4(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.amber[500],
-                                  size: 15,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          restaurant.name,
+                                          style: GoogleFonts.sourceSerif4(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        isFavorited
+                                            ? IconButton(
+                                                icon: const Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.red,
+                                                ),
+                                                onPressed: () =>
+                                                    provider.removeFavorites(
+                                                        restaurant.id),
+                                              )
+                                            : IconButton(
+                                                icon: const Icon(
+                                                  Icons.favorite_border,
+                                                  color: Colors.red,
+                                                ),
+                                                onPressed: () => provider
+                                                    .addFavorite(restaurants),
+                                              ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.amber[500],
+                                          size: 15,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          restaurant.rating.toString(),
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black54),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.share_location),
+                                        Text(restaurant.city),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(restaurant.address),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  restaurant.rating.toString(),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                textAlign: TextAlign.justify,
+                                restaurant.description,
+                                style: GoogleFonts.poppins(fontSize: 15),
+                                maxLines: 2,
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _displayBottomSheet(context);
+                                },
+                                child: Text(
+                                  'Read More',
                                   style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black54),
+                                      color: Colors.red[500],
+                                      fontWeight: FontWeight.w500),
                                 ),
-                              ],
+                              ),
                             ),
-                            Row(
-                              children: [
-                                const Icon(Icons.share_location),
-                                Text(restaurant.city),
-                              ],
+                            SizedBox(
+                              height: 15,
                             ),
-                            Row(
-                              children: [
-                                Text(restaurant.address),
-                              ],
-                            ),
+                            _buildFoodImages(restaurant.menus.foods),
+                            _buildDrinkImages(restaurant.menus.drinks),
+                            SizedBox(
+                              height: 150,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Review Customer',
+                                    style: GoogleFonts.sourceSerif4(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Expanded(
+                                      child: ReviewListWidget(
+                                          customerReviews:
+                                              restaurant.customerReviews)),
+                                ],
+                              ),
+                            )
                           ],
                         ),
-                      
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        textAlign: TextAlign.justify,
-                        restaurant.description,
-                        style: GoogleFonts.poppins(fontSize: 15),
-                        maxLines: 2,
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          _displayBottomSheet(context);
-                        },
-                        child: Text(
-                          'Read More',
-                          style: GoogleFonts.poppins(
-                              color: Colors.red[500],
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    _buildFoodImages(restaurant.menus.foods),
-                    _buildDrinkImages(restaurant.menus.drinks),
-                    SizedBox(
-                      height: 150,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Review Customer',
-                            style: GoogleFonts.sourceSerif4(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Expanded(
-                              child: ReviewListWidget(
-                                  customerReviews: restaurant.customerReviews)),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              // _ListMenu()
-            ],
-          ),
-        ]);
+                      // _ListMenu()
+                    ],
+                  ),
+                ]);
+          },
+        );
+      },
+    );
   }
 
   Future _displayBottomSheet(BuildContext context) {

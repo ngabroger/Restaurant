@@ -4,7 +4,6 @@ import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/widget/search_item.dart';
 import '../data/controllers/restaurant_controller.dart';
 import 'package:provider/provider.dart';
-import 'package:animation_search_bar/animation_search_bar.dart';
 import '../data/model/restaurant.dart';
 
 class SearchPage extends StatefulWidget {
@@ -24,12 +23,12 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size(double.infinity, 65),
+          preferredSize: const Size(double.infinity, 65),
           child: SafeArea(
             child: Container(
-              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              decoration: const BoxDecoration(color: Colors.white, boxShadow: [
                 BoxShadow(
-                    color: Colors.black26,
+                    color: Color.fromRGBO(0, 0, 0, 0.259),
                     blurRadius: 5,
                     spreadRadius: 0,
                     offset: Offset(0, 5)),
@@ -51,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Consumer<RestaurantController>(builder: (context, state, _) {
         _provider = state;
         if (state.state == ResultState.loading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state.state == ResultState.hasData) {
           _restaurant = state.result;
           return _buildItem(_restaurant);

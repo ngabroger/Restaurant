@@ -1,6 +1,7 @@
 import 'package:avatar_brick/avatar_brick.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:restaurant_app/pages/favorite_page.dart';
 
 import 'package:restaurant_app/widget/restaurant_list.dart';
 
@@ -18,17 +19,27 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red,
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, FavoritePage.routeName);
+                  },
+                  icon: const Icon(Icons.favorite));
+            },
+          ),
           title: Center(
               child: Text(
             'Home Page',
-            style: GoogleFonts.poppins(fontSize: 20),
+            style: GoogleFonts.poppins(
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.w700),
           )),
           actions: [
             IconButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/search');
                 },
-                icon: Icon(Icons.search))
+                icon: const Icon(Icons.search))
           ],
         ),
         body: ListView(
@@ -36,11 +47,11 @@ class _HomePageState extends State<HomePage> {
           children: [
             _profileAccount(),
             Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               width: double.infinity,
               height: 250,
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
                 child: Image.asset(
                   'assets/images/restaurant.png',
                   fit: BoxFit.cover,
@@ -48,7 +59,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -59,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.poppins(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  RestaurantList(),
+                  const RestaurantList(),
                 ],
               ),
             )

@@ -6,7 +6,6 @@ import 'package:restaurant_app/pages/detail_page.dart';
 import '../data/api/api_service.dart';
 import '../data/controllers/restaurant_controller.dart';
 import '../data/model/restaurant.dart';
-import 'bookmark.dart';
 
 class RestaurantList extends StatelessWidget {
   const RestaurantList({Key? key}) : super(key: key);
@@ -150,7 +149,12 @@ class RestaurantList extends StatelessWidget {
                           ),
                           Container(
                             padding: EdgeInsets.all(15),
-                            child: Bookmark(),
+                            // child: Expanded(
+                            //   child: Bookmark(
+                            //     restaurant: restaurant,
+                            //     restaurants: restaurant,
+                            //   ),
+                            // ),
                           ),
                         ],
                       ),

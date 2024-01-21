@@ -46,9 +46,12 @@ class DetailPage extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state.state == ResultState.hasData) {
-                      final restaurant = state.result;
+                      final restaurants = state.result;
                       return RestaurantDetail(
-                          restaurant: restaurant, provider: provider);
+                        restaurant: restaurants,
+                        provider: provider,
+                        restaurants: restaurant,
+                      );
                     } else if (state.state == ResultState.noData) {
                       return Center(
                         child: Text('No Data Found'),

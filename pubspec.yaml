@@ -42,6 +42,7 @@ dependencies:
   http: ^1.1.2
   provider: ^6.1.1
   animation_search_bar: ^0.0.10
+  sqflite: ^2.0.0+4
 dev_dependencies:
   flutter_test:
     sdk: flutter
